@@ -17,11 +17,11 @@ from google_calendar_notifications import app_name
 from google_calendar_notifications.settings import CREDENTIALS, SCOPES
 
 
-def show_notification(summary: str, message: Optional[str]):
+def show_notification(summary: str, message: Optional[str], time: str):
     message = message if message else ""
     notify2.init(app_name)
     notification = notify2.Notification(summary=summary,
-                                        message=message,
+                                        message=time + "\n" + message,
                                         icon="calendar")
     notification.timeout = 15000
     notification.show()
@@ -70,10 +70,12 @@ if __name__ == "__main__":
     scheduled_events: set[str] = set()
 
     for event in events:
+        event_time = event.start.strftime("%H:%M")
         if event.event_id in scheduled_events:
             continue
-        schedule.every().day.at(event.start.strftime("%H:%M")).do(
-            show_notification, event.summary, event.description)
+        schedule.every().day.at(event_time).do(show_notification,
+                                               event.summary, event.location,
+                                               event_time)
         scheduled_events.add(event.event_id)
 
     while True:

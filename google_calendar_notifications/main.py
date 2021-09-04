@@ -1,6 +1,8 @@
 import datetime
 from pathlib import Path
-from typing import List, Optional
+import time
+from typing import List, Optional, Type
+from dateutil import tz
 
 import notify2
 from gcsa.event import Event
@@ -9,12 +11,24 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
+import schedule
 
 from google_calendar_notifications import app_name
 from google_calendar_notifications.settings import CREDENTIALS, SCOPES
 
-if __name__ == "__main__":
+
+def show_notification(summary: str, message: Optional[str]):
+    message = message if message else ""
     notify2.init(app_name)
+    notification = notify2.Notification(summary=summary,
+                                        message=message,
+                                        icon="calendar")
+    notification.timeout = 15000
+    notification.show()
+    return schedule.CancelJob
+
+
+if __name__ == "__main__":
     home = Path.home()
     app_directory = home / ".google-calendar-notifications"
     if not app_directory.exists():
@@ -53,10 +67,15 @@ if __name__ == "__main__":
         if event if event.start > datetime.datetime.now(event.start.tzinfo)
     ]
 
+    scheduled_events: set[str] = set()
+
     for event in events:
-        if event:
-            print("Reminders: ", event.reminders)
-            print("Start date: ", event.start)
-            print("Description: ", event.description)
-            print("Summary: ", event.summary)
-            print("-----")
+        if event.event_id in scheduled_events:
+            continue
+        schedule.every().day.at(event.start.strftime("%H:%M")).do(
+            show_notification, event.summary, event.description)
+        scheduled_events.add(event.event_id)
+
+    while True:
+        schedule.run_pending()
+        time.sleep(1)

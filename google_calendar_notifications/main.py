@@ -1,17 +1,17 @@
 import datetime
-from pathlib import Path
 import time
+from pathlib import Path
 from typing import List, Optional, Type
-from dateutil import tz
 
 import notify2
+import schedule
+from dateutil import tz
 from gcsa.event import Event
 from gcsa.google_calendar import GoogleCalendar
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-import schedule
 
 from google_calendar_notifications import app_name
 from google_calendar_notifications.settings import CREDENTIALS, SCOPES

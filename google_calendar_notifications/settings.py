@@ -1,3 +1,7 @@
+from pathlib import Path
+
+_home = Path.home()
+
 CREDENTIALS = {
     'installed': {
         'client_id':
@@ -13,3 +17,5 @@ CREDENTIALS = {
 }
 
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
+
+APP_DIRECTORY = _home / ".google-calendar-notifications"

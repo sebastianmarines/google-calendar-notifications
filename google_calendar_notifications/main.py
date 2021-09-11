@@ -5,10 +5,12 @@ from google.oauth2.credentials import Credentials
 
 import schedule
 
-from google_calendar_notifications.helpers import (authenticate_user,
-                                                   get_calendars, get_events,
-                                                   schedule_job_for_event,
-                                                   show_notification)
+from google_calendar_notifications.helpers import (
+    authenticate_user,
+    get_calendars,
+    get_events,
+    schedule_job_for_event,
+)
 from google_calendar_notifications.models import ScheduledEvent
 from google_calendar_notifications.settings import APP_DIRECTORY
 
